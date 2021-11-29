@@ -16,7 +16,7 @@ export class PollutionService {
     private readonly httpService: HttpService,
   ) {}
 
-  async saveIqAir(lat, lon) {
+  async getPollution(lat, lon) {
     const url = `${process.env.IQAIR_HOST}${process.env.IQAIR_NEAR_CITY}lat=${lat}&lon=${lon}&key=${process.env.IQAIR_KEY}`;
 
     try {

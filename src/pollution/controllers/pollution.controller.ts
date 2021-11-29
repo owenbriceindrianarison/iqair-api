@@ -6,7 +6,7 @@ export class PollutionController {
   constructor(private readonly pollutionService: PollutionService) {}
 
   @Get(':lat/:lon')
-  create(@Param('lat') lat: number, @Param('lon') lon: number) {
-    return this.pollutionService.saveIqAir(lat, lon);
+  getPollution(@Param('lat') lat: number, @Param('lon') lon: number) {
+    return this.pollutionService.getPollution(lat, lon);
   }
 }
