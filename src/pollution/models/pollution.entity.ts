@@ -28,4 +28,7 @@ export class Pollution {
 
   @Column()
   maincn: string;
+
+  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
 }

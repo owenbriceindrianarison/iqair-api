@@ -4,6 +4,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Cron } from '@nestjs/schedule';
 import { Repository } from 'typeorm';
 import { Pollution } from '../models/pollution.entity';
 
@@ -16,6 +17,31 @@ export class PollutionService {
   ) {}
 
   async saveIqAir(lat, lon) {
+    const url = `${process.env.IQAIR_HOST}${process.env.IQAIR_NEAR_CITY}lat=${lat}&lon=${lon}&key=${process.env.IQAIR_KEY}`;
+
+    try {
+      const { data } = await this.httpService.get(url).toPromise();
+
+      if (data?.status === 'success') {
+        const {
+          data: { current },
+        } = data;
+        return {
+          result: {
+            pollution: current.pollution,
+          },
+        };
+      }
+      throw new UnprocessableEntityException('Something went wrong');
+    } catch (err) {
+      throw new UnprocessableEntityException('Something went wrong');
+    }
+  }
+
+  @Cron('60 * * * * *')
+  async handleCron() {
+    const lat = 48.856613;
+    const lon = 2.352222;
     const url = `${process.env.IQAIR_HOST}${process.env.IQAIR_NEAR_CITY}lat=${lat}&lon=${lon}&key=${process.env.IQAIR_KEY}`;
 
     try {
@@ -37,9 +63,9 @@ export class PollutionService {
         };
         return this.pollutionRepository.save(pollution);
       }
-      throw new UnprocessableEntityException('Something went wrong');
+      throw new UnprocessableEntityException('CRON FAILED');
     } catch (err) {
-      throw new UnprocessableEntityException('Something went wrong');
+      throw new UnprocessableEntityException('CRON FAILED');
     }
   }
 }
